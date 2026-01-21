@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://cnqjh3fs652dt"]
+
+[ext_resource type="PackedScene" uid="uid://b2yq6gub17c2g" path="res://GUI.tscn" id="1_c6gwx"]
+[ext_resource type="PackedScene" uid="uid://cl78soy2y0hhi" path="res://Slugs.tscn" id="2_2dftf"]
+[ext_resource type="PackedScene" uid="uid://c3c2awubi5wic" path="res://audio.tscn" id="3_bcbcq"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="slug" parent="." instance=ExtResource("2_2dftf")]
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31579804, 3.7883306)
+projection = 1
+
+[node name="Gui" parent="." instance=ExtResource("1_c6gwx")]
+
+[node name="Audio" parent="." instance=ExtResource("3_bcbcq")]

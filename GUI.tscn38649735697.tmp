@@ -1,0 +1,140 @@
+[gd_scene load_steps=2 format=3 uid="uid://b2yq6gub17c2g"]
+
+[ext_resource type="Script" uid="uid://s1rkg4h2te3p" path="res://gui.gd" id="1_q7530"]
+
+[node name="Gui" type="Control" node_paths=PackedStringArray("debug", "resources", "current_mult", "flavourtext", "generate_timer", "cutscene_timer")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_q7530")
+debug = NodePath("Debug")
+resources = NodePath("Resources")
+current_mult = NodePath("Current Mult")
+flavourtext = NodePath("Flavourtext")
+generate_timer = NodePath("Generate Timer")
+cutscene_timer = NodePath("Cutscene Timer")
+
+[node name="Flavourtext" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "Flavortown"
+
+[node name="Resources" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -11.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"HeaderLarge"
+text = "boons!?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Current Mult" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -391.0
+offset_top = -105.0
+offset_right = -131.0
+offset_bottom = -66.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_type_variation = &"HeaderLarge"
+text = "current mult: 1"
+vertical_alignment = 1
+
+[node name="Battle" type="Button" parent="."]
+custom_minimum_size = Vector2(320, 80)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = 39.0
+offset_right = 160.0
+offset_bottom = 119.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "SOLO BATTLE!"
+
+[node name="Buy n00b" type="Button" parent="."]
+custom_minimum_size = Vector2(320, 80)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = 118.0
+offset_right = 160.0
+offset_bottom = 198.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "buy n00b"
+
+[node name="Sacrifice n00bs" type="Button" parent="."]
+custom_minimum_size = Vector2(320, 80)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = 197.0
+offset_right = 160.0
+offset_bottom = 277.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "sacrifice n00bs"
+
+[node name="Host Battle" type="Button" parent="."]
+custom_minimum_size = Vector2(320, 80)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -479.0
+offset_top = 118.0
+offset_right = -159.0
+offset_bottom = 198.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Host <Battle>"
+
+[node name="Generate Timer" type="Timer" parent="."]
+
+[node name="Cutscene Timer" type="Timer" parent="."]
+
+[node name="Debug" type="Label" parent="."]
+layout_mode = 0
+offset_left = 849.0
+offset_top = 44.0
+offset_right = 1058.0
+offset_bottom = 135.0
+
+[connection signal="button_down" from="Battle" to="." method="_on_battle_button_down"]
+[connection signal="button_up" from="Battle" to="." method="_on_battle_button_up"]
+[connection signal="pressed" from="Buy n00b" to="." method="_on_n00b_pressed"]
+[connection signal="button_up" from="Sacrifice n00bs" to="." method="_on_sacrifice_n00bs_button_up"]
+[connection signal="pressed" from="Host Battle" to="." method="_on_host_battle_pressed"]
+[connection signal="timeout" from="Generate Timer" to="." method="_on_timer_timeout"]

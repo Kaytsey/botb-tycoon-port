@@ -113,7 +113,7 @@ func update_label_text() -> void:
 		resources.text = "%.2f boons" %boons
 	else:
 		#resources.text = "%s boons & " %boons + "%s n00bs" %n00bs
-		resources.text = "%.2f & " %boons + "%s n00bs" %n00bs
+		resources.text = "%.2f boons & " %boons + "%s n00bs" %n00bs
 	current_mult.text = "Current Multiplier: %s" %boon_mult
 	
 	#debug
@@ -131,7 +131,7 @@ func update_flavourtext_text() -> void:
 func _on_timer_timeout() -> void:
 	
 	#testing
-	calculate_purchasable_n00bs()
+	#calculate_purchasable_n00bs()
 	
 	if battle_pressed: make_boons()
 	generate_boons()
@@ -154,18 +154,16 @@ func generate_boons() -> void:
 
 #todo multipurchase
 func make_n00bs() -> void:
-	if boons >= n00b_cost:
-		#boons -= n00b_cost_base
+	while boons >= n00b_cost:
 		n00bs += 1
-		#n00b_cost_base = 10 * n00bs * 1.2 #get better math
 		boons -= n00b_cost
-		n00b_cost = ceil(n00b_cost_base * pow(n00b_cost_mult, n00bs))
+		n00b_cost = ceil(calculate_n00b_cost())
 
-func calculate_purchasable_n00bs() -> int:
-	
-	
-	return n00bs_purchasable
-
+#func calculate_purchasable_n00bs() -> int:
+#	var temp_cost : float = 0.0
+#	calculate_n00b_cost()
+#	
+#	return n00bs_purchasable
 
 func sacricice_n00bs() -> void:
 	if n00bs >= sacrifice_cost:
@@ -173,9 +171,12 @@ func sacricice_n00bs() -> void:
 		sacrifice_cost *= 2
 		boon_mult *= 2
 		#n00b_cost_base = 10 #wrong
-		n00b_cost = ceil(n00b_cost_base * pow(n00b_cost_mult, n00bs)) #oh well
+		n00b_cost = ceil(calculate_n00b_cost()) #oh well
 		sacrificed = true
 		update_flavourtext_text()
+
+func calculate_n00b_cost() -> float:
+	return n00b_cost_base * pow(n00b_cost_mult, n00bs)
 
 #todo
 #i will not write an audio engine for this, sorry

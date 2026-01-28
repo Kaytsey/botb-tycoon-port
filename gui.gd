@@ -11,7 +11,7 @@ extends Control
 
 #resources
 var battle_pressed : bool = false
-var boons : float = 0.00
+var boons : float = 9999999990.00
 var boons_per_tick : int = 9
 var boon_mult : int = 1
 var n00bs : int = 0
@@ -99,7 +99,7 @@ func _on_n00b_pressed() -> void:
 
 #sacrifice n00b-Button
 func _on_sacrifice_n00bs_button_up():
-	sacricice_n00bs()
+	sacrifice_n00bs()
 	update_label_text()
 
 #host bat0l
@@ -152,7 +152,7 @@ func generate_boons() -> void:
 	update_label_text()
 
 
-#todo multipurchase
+#todo this fucking destroys my pc at multiple millions
 func make_n00bs() -> void:
 	while boons >= n00b_cost:
 		n00bs += 1
@@ -165,18 +165,21 @@ func make_n00bs() -> void:
 #	
 #	return n00bs_purchasable
 
-func sacricice_n00bs() -> void:
+func sacrifice_n00bs() -> void:
 	if n00bs >= sacrifice_cost:
 		n00bs -= sacrifice_cost
 		sacrifice_cost *= 2
 		boon_mult *= 2
-		#n00b_cost_base = 10 #wrong
 		n00b_cost = ceil(calculate_n00b_cost()) #oh well
 		sacrificed = true
 		update_flavourtext_text()
 
+
 func calculate_n00b_cost() -> float:
-	return n00b_cost_base * pow(n00b_cost_mult, n00bs)
+	if sacrificed:
+		return n00b_cost_base * (n00b_cost_mult * n00bs)
+	else:
+		return n00b_cost_base * pow(n00b_cost_mult, n00bs)
 
 #todo
 #i will not write an audio engine for this, sorry
@@ -225,14 +228,14 @@ func win_game() -> void:
 	if finishable and !sacrificed:
 		#good end
 		hide()
-		play_cutscene()
+		play_cutscene() #spawn particle system
 		show()
 		pass
 		
 	elif finishable and sacrificed:
 		#bad end
 		hide()
-		play_cutscene()
+		play_cutscene() #spawn particle system
 		show()
 		pass
 	pass

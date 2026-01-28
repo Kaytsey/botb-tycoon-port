@@ -1,0 +1,85 @@
+[gd_scene format=3 uid="uid://cc7x6f2mp4rh4"]
+
+[ext_resource type="ArrayMesh" uid="uid://cecr4wh0nf4nr" path="res://Models/Slug.res" id="1_5ehqd"]
+
+[sub_resource type="Curve" id="Curve_5ehqd"]
+_data = [Vector2(0.0094637275, 1), 0.0, 0.0, 0, 0, Vector2(0.7507886, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_m07cm"]
+curve = SubResource("Curve_5ehqd")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_m07cm"]
+particle_flag_rotate_y = true
+emission_shape_offset = Vector3(0, 0, 4)
+emission_shape = 6
+emission_ring_axis = Vector3(0, 0, 1)
+emission_ring_height = 1.0
+emission_ring_radius = 4.0
+emission_ring_inner_radius = 0.0
+emission_ring_cone_angle = 90.0
+inherit_velocity_ratio = 1.0
+direction = Vector3(0, 0, -1)
+spread = 0.0
+initial_velocity_min = 2.0
+initial_velocity_max = 4.0
+angular_velocity_min = -1.6093254e-05
+angular_velocity_max = 49.99998
+gravity = Vector3(0, 0, -9.8)
+linear_accel_min = -10.140002
+linear_accel_max = -7.320002
+scale_max = 1.5
+alpha_curve = SubResource("CurveTexture_m07cm")
+
+[sub_resource type="Curve" id="Curve_m07cm"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25236595, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_gi0sb"]
+curve = SubResource("Curve_m07cm")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_8vsmd"]
+particle_flag_rotate_y = true
+emission_shape_offset = Vector3(0, 0, -6)
+emission_shape = 6
+emission_ring_axis = Vector3(0, 0, 1)
+emission_ring_height = 1.0
+emission_ring_radius = 4.0
+emission_ring_inner_radius = 0.0
+emission_ring_cone_angle = 90.0
+inherit_velocity_ratio = 1.0
+direction = Vector3(0, 0, 1)
+spread = 0.0
+initial_velocity_min = 2.0
+initial_velocity_max = 4.0
+angular_velocity_min = -720.0
+angular_velocity_max = 719.99994
+gravity = Vector3(0, 0, 9.8)
+linear_accel_min = -3.9400022
+linear_accel_max = -1.1200023
+tangential_accel_min = -2.2351742e-06
+tangential_accel_max = 5.069998
+scale_max = 1.5
+alpha_curve = SubResource("CurveTexture_gi0sb")
+
+[node name="Particles" type="Node3D" unique_id=1402724741]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Ascend" type="GPUParticles3D" parent="." unique_id=1260798628]
+visible = false
+amount = 20
+lifetime = 3.0
+explosiveness = 0.15
+fixed_fps = 0
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_m07cm")
+draw_pass_1 = ExtResource("1_5ehqd")
+
+[node name="Descend" type="GPUParticles3D" parent="." unique_id=1319522552]
+amount = 20
+lifetime = 3.0
+explosiveness = 0.15
+fixed_fps = 0
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_8vsmd")
+draw_pass_1 = ExtResource("1_5ehqd")

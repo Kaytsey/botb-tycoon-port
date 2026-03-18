@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://b2yq6gub17c2g"]
 
 [ext_resource type="Script" uid="uid://s1rkg4h2te3p" path="res://gui.gd" id="1_q7530"]
+[ext_resource type="AudioStream" uid="uid://b2i7d3uyacyj4" path="res://Music/TrueEnd.ogg" id="2_hnmit"]
+[ext_resource type="AudioStream" uid="uid://du3ru1bjmjebh" path="res://Music/End.ogg" id="3_nn5of"]
 
 [node name="Gui" type="Control" unique_id=1459124433 node_paths=PackedStringArray("debug", "resources", "current_mult", "flavourtext", "generate_timer", "cutscene_timer")]
 layout_mode = 3
@@ -132,9 +134,49 @@ offset_top = 44.0
 offset_right = 1058.0
 offset_bottom = 135.0
 
+[node name="Win" type="Button" parent="." unique_id=2035539011]
+custom_minimum_size = Vector2(320, 80)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -515.0
+offset_top = -205.0
+offset_right = -195.0
+offset_bottom = -125.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "WIN GAME"
+
+[node name="Lose" type="Button" parent="." unique_id=1937436112]
+custom_minimum_size = Vector2(320, 80)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -515.0
+offset_top = -126.0
+offset_right = -195.0
+offset_bottom = -46.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "LOSE GAME"
+
+[node name="TrueEnd" type="AudioStreamPlayer" parent="." unique_id=792819049]
+stream = ExtResource("2_hnmit")
+
+[node name="End" type="AudioStreamPlayer" parent="." unique_id=1468373123]
+stream = ExtResource("3_nn5of")
+
 [connection signal="button_down" from="Battle" to="." method="_on_battle_button_down"]
 [connection signal="button_up" from="Battle" to="." method="_on_battle_button_up"]
 [connection signal="pressed" from="Buy n00b" to="." method="_on_n00b_pressed"]
 [connection signal="button_up" from="Sacrifice n00bs" to="." method="_on_sacrifice_n00bs_button_up"]
 [connection signal="pressed" from="Host Battle" to="." method="_on_host_battle_pressed"]
 [connection signal="timeout" from="Generate Timer" to="." method="_on_timer_timeout"]
+[connection signal="button_down" from="Win" to="." method="_on_win_button_down"]
+[connection signal="button_down" from="Lose" to="." method="_on_lose_button_down"]

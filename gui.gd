@@ -11,12 +11,12 @@ extends Control
 
 #resources
 var battle_pressed : bool = false
-var boons : float = 9999999990.00
+var boons : float = 0.00
 var boons_per_tick : int = 9
 var boon_mult : int = 1
 var n00bs : int = 0
 var n00b_cost : float = 10.0
-var n00b_cost_base : float = 10.0
+const n00b_cost_base : float = 10.0
 var n00b_cost_mult : float = 1.618
 var n00bs_purchasable : int = 0
 var entries : int = 0
@@ -83,7 +83,20 @@ func _ready():
 	update_label_text()
 	generate_timer.start(ticks)
 
+#TESTING
+func _on_win_button_down():
+	#win_game()
+		hide()
+		#play_cutscene() #spawn particle system
+		$TrueEnd.play()
+		show()
+		#$TrueEnd.stop()
 
+func _on_lose_button_down():
+	#win_game()
+		hide()
+		$End.play()
+		show()
 
 
 #Battle-Button
@@ -131,7 +144,7 @@ func update_flavourtext_text() -> void:
 func _on_timer_timeout() -> void:
 	
 	#testing
-	#calculate_purchasable_n00bs()
+	calculate_purchasable_n00bs()
 	
 	if battle_pressed: make_boons()
 	generate_boons()
@@ -158,12 +171,15 @@ func make_n00bs() -> void:
 		n00bs += 1
 		boons -= n00b_cost
 		n00b_cost = ceil(calculate_n00b_cost())
+		#TODO convert to 1k, 1m, 1b
 
-#func calculate_purchasable_n00bs() -> int:
-#	var temp_cost : float = 0.0
-#	calculate_n00b_cost()
-#	
-#	return n00bs_purchasable
+
+#testing
+func calculate_purchasable_n00bs() -> int:
+	n00bs_purchasable = floor(((boons / n00b_cost_base) / n00b_cost_mult) - n00bs)
+	return n00bs_purchasable
+
+
 
 func sacrifice_n00bs() -> void:
 	if n00bs >= sacrifice_cost:

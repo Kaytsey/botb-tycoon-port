@@ -18,7 +18,6 @@ var n00bs : int = 0
 var n00b_cost : float = 10.0
 const n00b_cost_base : float = 10.0
 var n00b_cost_mult : float = 1.618
-var n00bs_purchasable : int = 0
 var entries : int = 0
 var sacrifice_cost : int = 2
 
@@ -34,7 +33,7 @@ const XHB_cost = {
 var sacrificed : bool = false #ending related
 var progression : int = 0
 var finishable : bool = false
-#todo add boon breakpoints for later texts
+#todo maybe add boon breakpoints for later texts
 var flavourtext_text = [
 	"welcome, n00b",
 	"boonless chicken",
@@ -108,6 +107,8 @@ func _on_battle_button_up() -> void:
 #Buy n00b-Button
 func _on_n00b_pressed() -> void:
 	make_n00bs()
+	if (n00bs + boon_mult) >= 8000000000:
+		finishable = true
 	update_label_text()
 
 #sacrifice n00b-Button
@@ -128,9 +129,6 @@ func update_label_text() -> void:
 		#resources.text = "%s boons & " %boons + "%s n00bs" %n00bs
 		resources.text = "%.2f boons & " %boons + "%s n00bs" %n00bs
 	current_mult.text = "Current Multiplier: %s" %boon_mult
-	
-	#debug
-	debug.text = "n00b_cost: %s\n" %n00b_cost + "you can buy %s n00bs" %n00bs_purchasable
 
 
 func update_flavourtext_text() -> void:
@@ -143,8 +141,6 @@ func update_flavourtext_text() -> void:
 #time
 func _on_timer_timeout() -> void:
 	
-	#testing
-	calculate_purchasable_n00bs()
 	
 	if battle_pressed: make_boons()
 	generate_boons()
@@ -165,20 +161,13 @@ func generate_boons() -> void:
 	update_label_text()
 
 
-#todo this fucking destroys my pc at multiple millions
+#todo this fucking destroys my pc at multiple millions - "fixed"
 func make_n00bs() -> void:
-	while boons >= n00b_cost:
-		n00bs += 1
-		boons -= n00b_cost
+	while boons >= boon_mult * n00b_cost:
+		#this method is quite inaccurate, but it works lol
+		n00bs += boon_mult
+		boons -= boon_mult * n00b_cost
 		n00b_cost = ceil(calculate_n00b_cost())
-		#TODO convert to 1k, 1m, 1b
-
-
-#testing
-func calculate_purchasable_n00bs() -> int:
-	n00bs_purchasable = floor(((boons / n00b_cost_base) / n00b_cost_mult) - n00bs)
-	return n00bs_purchasable
-
 
 
 func sacrifice_n00bs() -> void:
@@ -235,8 +224,6 @@ func host_xhb() -> void:
 		play_cutscene()
 		show()
 		pass
-	#pass
-
 
 
 #todo

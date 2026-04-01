@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cc7x6f2mp4rh4"]
 
-[ext_resource type="ArrayMesh" uid="uid://cecr4wh0nf4nr" path="res://Models/Slug.res" id="1_5ehqd"]
+[ext_resource type="ArrayMesh" uid="uid://d1b1jhljkrf6g" path="res://Models/Slug.res" id="1_5ehqd"]
 
 [sub_resource type="Curve" id="Curve_5ehqd"]
 _data = [Vector2(0.0094637275, 1), 0.0, 0.0, 0, 0, Vector2(0.7507886, 0), 0.0, 0.0, 0, 0]
@@ -66,7 +66,6 @@ alpha_curve = SubResource("CurveTexture_gi0sb")
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 
 [node name="Ascend" type="GPUParticles3D" parent="." unique_id=1260798628]
-visible = false
 amount = 20
 lifetime = 3.0
 explosiveness = 0.15

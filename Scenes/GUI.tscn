@@ -4,7 +4,7 @@
 [ext_resource type="AudioStream" uid="uid://b2i7d3uyacyj4" path="res://Music/TrueEnd.ogg" id="2_hnmit"]
 [ext_resource type="AudioStream" uid="uid://du3ru1bjmjebh" path="res://Music/End.ogg" id="3_nn5of"]
 
-[node name="Gui" type="Control" unique_id=1459124433 node_paths=PackedStringArray("debug", "resources", "current_mult", "flavourtext", "generate_timer", "cutscene_timer", "sacrifice_button", "host_battle_button")]
+[node name="Gui" type="Control" unique_id=1459124433 node_paths=PackedStringArray("debug", "resources", "current_mult", "flavourtext", "generate_timer", "cutscene_timer", "sacrifice_button", "host_battle_button", "restart_button")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,6 +20,7 @@ generate_timer = NodePath("Generate Timer")
 cutscene_timer = NodePath("Cutscene Timer")
 sacrifice_button = NodePath("Sacrifice n00bs")
 host_battle_button = NodePath("Host Battle")
+restart_button = NodePath("Restart")
 
 [node name="Flavourtext" type="Label" parent="." unique_id=2135495035]
 layout_mode = 1
@@ -45,6 +46,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Current Mult" type="Label" parent="." unique_id=2116353986]
+visible = false
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
@@ -60,6 +62,23 @@ grow_vertical = 0
 theme_type_variation = &"HeaderLarge"
 text = "current mult: 1"
 vertical_alignment = 1
+
+[node name="Restart" type="Button" parent="." unique_id=1613324365]
+visible = false
+custom_minimum_size = Vector2(320, 80)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = 86.0
+offset_right = 160.0
+offset_bottom = 166.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Restart"
 
 [node name="Battle" type="Button" parent="." unique_id=612793642]
 custom_minimum_size = Vector2(320, 80)
@@ -130,6 +149,7 @@ text = "Host <Battle>"
 [node name="Cutscene Timer" type="Timer" parent="." unique_id=1554426040]
 
 [node name="Debug" type="Label" parent="." unique_id=334591012]
+visible = false
 layout_mode = 0
 offset_left = 849.0
 offset_top = 44.0
@@ -174,6 +194,7 @@ stream = ExtResource("2_hnmit")
 [node name="End" type="AudioStreamPlayer" parent="." unique_id=1468373123]
 stream = ExtResource("3_nn5of")
 
+[connection signal="pressed" from="Restart" to="." method="_on_restart_pressed"]
 [connection signal="button_down" from="Battle" to="." method="_on_battle_button_down"]
 [connection signal="button_up" from="Battle" to="." method="_on_battle_button_up"]
 [connection signal="pressed" from="Buy n00b" to="." method="_on_n00b_pressed"]

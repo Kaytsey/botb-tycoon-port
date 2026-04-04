@@ -62,8 +62,46 @@ tangential_accel_max = 5.069998
 scale_max = 1.5
 alpha_curve = SubResource("CurveTexture_gi0sb")
 
+[sub_resource type="Animation" id="Animation_5ehqd"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1.5707964, 6.2831855, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_m07cm"]
+resource_name = "Turn"
+length = 15.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 15),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(1.5707964, 0, 0), Vector3(1.5707964, -6.2831855, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_gi0sb"]
+_data = {
+&"RESET": SubResource("Animation_5ehqd"),
+&"Turn": SubResource("Animation_m07cm")
+}
+
 [node name="Particles" type="Node3D" unique_id=1402724741]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+transform = Transform3D(1, 1.7484555e-07, -7.642742e-15, 0, -4.371139e-08, -1, -1.7484555e-07, 1, -4.371139e-08, 0, 0, 0)
 
 [node name="Ascend" type="GPUParticles3D" parent="." unique_id=1260798628]
 amount = 20
@@ -82,3 +120,7 @@ fixed_fps = 0
 local_coords = true
 process_material = SubResource("ParticleProcessMaterial_8vsmd")
 draw_pass_1 = ExtResource("1_5ehqd")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=15703134]
+libraries/ = SubResource("AnimationLibrary_gi0sb")
+autoplay = &"Turn"

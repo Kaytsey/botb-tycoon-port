@@ -2,7 +2,6 @@ extends Control
 
 @export var debug : Label
 
-
 @export var resources : Label
 @export var current_mult : Label
 @export var flavourtext : Label
@@ -10,18 +9,19 @@ extends Control
 @export var cutscene_timer : Timer
 @export var sacrifice_button : Button
 @export var host_battle_button : Button
+@export var restart_button : Button
 
 @onready var particles = get_parent().get_node("Particles")
 
 #resources
 var battle_pressed : bool = false
 var boons : float = 0.00
-var boons_per_tick : int = 9
+const boons_per_tick : int = 9
 var boon_mult : int = 1
-var n00bs : int = 0
+var n00bs : int = 7999999999
 var n00b_cost : float = 10.0
 const n00b_cost_base : float = 10.0
-var n00b_cost_mult : float = 1.618
+const n00b_cost_mult : float = 1.618
 var entries : int = 0
 var sacrifice_cost : int = 2
 
@@ -37,8 +37,9 @@ const XHB_cost = {
 var sacrificed : bool = false #ending related
 var progression : int = 0
 var finishable : bool = false
-#todo maybe add boon breakpoints for later texts
-var flavourtext_text = [
+
+#todo maybe add boon breakpoints for later texts - nah
+const flavourtext_text = [
 	"welcome, n00b",
 	"boonless chicken",
 	"batol",
@@ -71,13 +72,10 @@ var flavourtext_text = [
 
 #timestuff
 var timer_iterations : int
-var ticks : float = 0.01
+const ticks : float = 0.01
 var tick_speed : float = 0.0
-var flavour_timer : int = 10
+const flavour_timer : int = 10
 var speed_mult : float = 1.0
-
-
-
 
 
 #Function Section
@@ -89,20 +87,20 @@ func _ready():
 	particles.get_node("Ascend").hide()
 	particles.get_node("Descend").hide()
 
+#Buttons
+
 #TESTING
 func _on_win_button_down():
-	#win_game()
-		hide()
-		#play_cutscene() #spawn particle system
-		particles.get_node("Ascend").show()
-		$TrueEnd.play()
-		#$TrueEnd.stop()
+	hide()
+	particles.get_node("Ascend").show()
+	$TrueEnd.play()
+	restart_button.show()
 
 func _on_lose_button_down():
-	#win_game()
-		hide()
-		particles.get_node("Descend").show()
-		$End.play()
+	hide()
+	particles.get_node("Descend").show()
+	$End.play()
+	restart_button.show()
 
 
 #Solo Battle-Button
@@ -143,13 +141,18 @@ func _on_sacrifice_n_00_bs_mouse_exited():
 func _on_host_battle_pressed():
 	host_xhb()
 
+func _on_restart_pressed():
+	restart_game()
+
+
+#Buttons End
 
 #General Text
 func update_label_text() -> void:
 	if !n00bs:
 		resources.text = "%.2f boons" %boons
 	else:
-		resources.text = "%.2f boons & " %boons + "%s n00bs " %n00bs + "making %s boons/s" %(boons_per_tick * n00bs * boon_mult)
+		resources.text = "%.2f boons & " %boons + "%s n00bs " %n00bs
 
 
 func update_flavourtext_text() -> void:
@@ -159,10 +162,11 @@ func update_flavourtext_text() -> void:
 		flavourtext.text = flavourtext_text[randf_range(progression, 5 + progression)]
 
 
-#time
+#timers
+
+
 func _on_timer_timeout() -> void:
-	
-	
+	win_game()
 	if battle_pressed: make_boons()
 	generate_boons()
 	timer_iterations += 1
@@ -249,20 +253,41 @@ func host_xhb() -> void:
 		show()
 		pass
 
-
 #todo
 func win_game() -> void:
 	if finishable and !sacrificed:
 		#good end
 		hide()
-		play_cutscene() #spawn particle system
-		show()
-		pass
+		particles.get_node("Ascend").show()
+		$TrueEnd.play()
+		restart_button.show()
+		
+		finishable = false
 		
 	elif finishable and sacrificed:
 		#bad end
 		hide()
-		play_cutscene() #spawn particle system
-		show()
-		pass
-	pass
+		particles.get_node("Descend").show()
+		$End.play()
+		restart_button.show()
+		
+		finishable = false
+
+func restart_game() -> void: #resets all relevant variables
+	boons = 0.00
+	boon_mult = 1
+	n00bs = 0
+	n00b_cost = 10.0
+	entries = 0
+	sacrifice_cost = 2
+	sacrificed = false
+	progression = 0
+	finishable = false
+	tick_speed = 0.0
+	speed_mult = 1.0
+	
+	$End.stop()
+	$TrueEnd.stop()
+	
+	show()
+	restart_button.hide()

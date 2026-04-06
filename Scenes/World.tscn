@@ -6,7 +6,7 @@
 
 [node name="Node3D" type="Node3D" unique_id=1715062099]
 
-[node name="slug" parent="." unique_id=276185541 instance=ExtResource("1_j0p05")]
+[node name="Slugs" parent="." unique_id=276185541 instance=ExtResource("1_j0p05")]
 visible = false
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=844126703]
@@ -17,4 +17,3 @@ size = 5.0
 [node name="Gui" parent="." unique_id=163799409 instance=ExtResource("2_5nsto")]
 
 [node name="Particles" parent="." unique_id=1402724741 instance=ExtResource("3_5nsto")]
-transform = Transform3D(-4.371139e-08, -1, 4.371139e-08, 0, -4.371139e-08, -1, 1, -4.371139e-08, 1.9106855e-15, 0, 0, 0)

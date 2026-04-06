@@ -1,9 +1,6 @@
 extends Control
 
-@export var debug : Label
-
 @export var resources : Label
-@export var current_mult : Label
 @export var flavourtext : Label
 @export var generate_timer : Timer
 @export var cutscene_timer : Timer
@@ -89,20 +86,6 @@ func _ready():
 
 #Buttons
 
-#TESTING
-func _on_win_button_down():
-	hide()
-	particles.get_node("Ascend").show()
-	$TrueEnd.play()
-	restart_button.show()
-
-func _on_lose_button_down():
-	hide()
-	particles.get_node("Descend").show()
-	$End.play()
-	restart_button.show()
-
-
 #Solo Battle-Button
 func _on_battle_button_down() -> void:
 	battle_pressed = true
@@ -174,6 +157,7 @@ func _on_timer_timeout() -> void:
 		update_flavourtext_text()
 		timer_iterations = 0
 	generate_timer.start(ticks)
+
 
 
 #resources
@@ -257,21 +241,42 @@ func host_xhb() -> void:
 func win_game() -> void:
 	if finishable and !sacrificed:
 		#good end
-		hide()
+		hide_all()
 		particles.get_node("Ascend").show()
 		$TrueEnd.play()
-		restart_button.show()
+		restart_fadein()
 		
 		finishable = false
 		
 	elif finishable and sacrificed:
 		#bad end
-		hide()
+		hide_all()
 		particles.get_node("Descend").show()
 		$End.play()
-		restart_button.show()
+		restart_fadein()
 		
 		finishable = false
+
+func restart_fadein() -> void:
+	restart_button.modulate.a = 0.0
+	restart_button.show()
+	var tween : Tween = create_tween()
+	tween.tween_interval(13.0)
+	tween.tween_property(restart_button, "modulate:a", 1.0, 5.0)
+	
+	
+
+#hides all hideable children
+func hide_all() -> void:
+	for node in $".".get_children():
+		if node is CanvasItem:
+			node.hide()
+#shows all hideable children
+func show_all() -> void:
+	for node in $".".get_children():
+		if node is CanvasItem:
+			node.show()
+
 
 func restart_game() -> void: #resets all relevant variables
 	boons = 0.00
@@ -289,5 +294,8 @@ func restart_game() -> void: #resets all relevant variables
 	$End.stop()
 	$TrueEnd.stop()
 	
-	show()
+	particles.get_node("Descend").hide()
+	particles.get_node("Ascend").hide()
+	
+	show_all()
 	restart_button.hide()

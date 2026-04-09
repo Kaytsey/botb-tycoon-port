@@ -4,7 +4,7 @@
 [ext_resource type="AudioStream" uid="uid://b2i7d3uyacyj4" path="res://Music/TrueEnd.ogg" id="2_hnmit"]
 [ext_resource type="AudioStream" uid="uid://du3ru1bjmjebh" path="res://Music/End.ogg" id="3_nn5of"]
 
-[node name="Gui" type="Control" unique_id=1459124433 node_paths=PackedStringArray("resources", "flavourtext", "generate_timer", "cutscene_timer", "sacrifice_button", "host_battle_button", "restart_button", "test_cutscene")]
+[node name="Gui" type="Control" unique_id=1459124433 node_paths=PackedStringArray("resources", "flavourtext", "ending_text", "generate_timer", "cutscene_timer", "sacrifice_button", "host_battle_button", "restart_button", "buy_n00bs", "test_cutscene")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,11 +14,13 @@ grow_vertical = 2
 script = ExtResource("1_q7530")
 resources = NodePath("Resources")
 flavourtext = NodePath("Flavourtext")
+ending_text = NodePath("Ending")
 generate_timer = NodePath("Generate Timer")
 cutscene_timer = NodePath("Cutscene Timer")
 sacrifice_button = NodePath("Sacrifice n00bs")
 host_battle_button = NodePath("Host Battle")
 restart_button = NodePath("Restart")
+buy_n00bs = NodePath("Buy n00b")
 test_cutscene = NodePath("Test Cutscene")
 
 [node name="Flavourtext" type="Label" parent="." unique_id=2135495035]
@@ -46,6 +48,15 @@ grow_vertical = 2
 theme_type_variation = &"HeaderLarge"
 text = "boons!?"
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Ending" type="Label" parent="." unique_id=546735384]
+layout_mode = 0
+offset_left = 63.0
+offset_top = 139.0
+offset_right = 469.0
+offset_bottom = 252.0
+theme_override_font_sizes/font_size = 32
 vertical_alignment = 1
 
 [node name="Restart" type="Button" parent="." unique_id=1613324365]
@@ -130,6 +141,7 @@ grow_vertical = 2
 text = "Host <Battle>"
 
 [node name="Test Cutscene" type="Button" parent="." unique_id=768359237]
+visible = false
 custom_minimum_size = Vector2(320, 80)
 layout_mode = 1
 anchors_preset = 8
@@ -149,6 +161,7 @@ text = "Test Cutscene"
 
 [node name="Cutscene Timer" type="Timer" parent="." unique_id=1554426040]
 wait_time = 10.0
+one_shot = true
 
 [node name="TrueEnd" type="AudioStreamPlayer" parent="." unique_id=792819049]
 stream = ExtResource("2_hnmit")

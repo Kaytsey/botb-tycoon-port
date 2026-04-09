@@ -7,9 +7,10 @@
 [node name="Node3D" type="Node3D" unique_id=1715062099]
 
 [node name="Slugs" parent="." unique_id=276185541 instance=ExtResource("1_j0p05")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35.827267, 0, 0)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=844126703]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31579804, 11.143066)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.316, 100)
 projection = 1
 size = 5.0
 

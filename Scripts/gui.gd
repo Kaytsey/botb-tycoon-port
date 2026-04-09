@@ -1,5 +1,7 @@
 extends Control
 
+#it might have been easier to spread the code to multiple nodes and/or to use a single scene, but of well
+
 @export var resources : Label
 @export var flavourtext : Label
 @export var generate_timer : Timer
@@ -8,7 +10,12 @@ extends Control
 @export var host_battle_button : Button
 @export var restart_button : Button
 
+@export var test_cutscene : Button
+
+const slug_scene = preload("res://Scenes/Slugs.tscn")
+
 @onready var particles = get_parent().get_node("Particles")
+@onready var slugs = get_parent().get_node("Slugs")
 
 #resources
 var battle_pressed : bool = false
@@ -21,6 +28,8 @@ const n00b_cost_base : float = 10.0
 const n00b_cost_mult : float = 1.618
 var entries : int = 0
 var sacrifice_cost : int = 2
+
+const cutscene_area_center : Vector3 = Vector3(0, 0, 0)
 
 #maybe use enum instead, maybe it doesn't matter lol
 const XHB_cost = {
@@ -122,11 +131,14 @@ func _on_sacrifice_n_00_bs_mouse_exited():
 
 #host bat0l
 func _on_host_battle_pressed():
+	hide_all()
 	host_xhb()
 
 func _on_restart_pressed():
 	restart_game()
 
+func _on_test_cutscene_pressed():
+	play_cutscene()
 
 #Buttons End
 
@@ -158,7 +170,9 @@ func _on_timer_timeout() -> void:
 		timer_iterations = 0
 	generate_timer.start(ticks)
 
-
+func _on_cutscene_timer_timeout():
+	show_all()
+	restart_button.hide()
 
 #resources
 func make_boons() -> void:
@@ -206,36 +220,48 @@ func play_sfx() -> void:
 
 
 #todo
+#todo
+#todo
 #maybe have an actual return value
 #maybe make node outside of this
 func play_cutscene() -> void:
-	pass
+	#spawn slugs randomly in visible field (for-loop, random amount)
+	#have them have random animations
+	#tally points
+	#after x seconds go back
+	var slug_amount = randi_range(1, min(n00bs, 560))
+	for i in slug_amount:
+		#print(i)
+		var slug = slug_scene.instantiate()
+		get_tree().current_scene.add_child(slug)
+		slug.global_position = cutscene_area_center + Vector3(
+			randf_range(-4.0, 4.0),
+			randf_range(-3.0, 3.0),
+			randf_range(-10.0, 10.0))
+		#var animations: AnimationPlayer = slug.get_node("AnimationPlayer")
+		#var animation = animations.get_animation_list()
+		#animation.play(animations.pick_random())
+	
 
 
 #todo
 func host_xhb() -> void:
 	if boons >= XHB_cost["OHB"] and boons < XHB_cost["2HB"]:
-		hide()
+		cutscene_timer.start()
 		play_cutscene()
-		show()
-		pass
+
 	if boons >= XHB_cost["2HB"] and boons < XHB_cost["4HB"]:
-		hide()
+		cutscene_timer.start()
 		play_cutscene()
-		show()
-		pass
+
 	if boons >= XHB_cost["4HB"] and boons < XHB_cost["MAJOR"]:
-		hide()
+		cutscene_timer.start()
 		play_cutscene()
-		show()
-		pass
 	
 	#MAJOR can have more entries than n00bs
 	if boons >= XHB_cost["MAJOR"]:
-		hide()
+		cutscene_timer.start()
 		play_cutscene()
-		show()
-		pass
 
 #todo
 func win_game() -> void:
@@ -258,7 +284,7 @@ func win_game() -> void:
 		finishable = false
 
 func restart_fadein() -> void:
-	restart_button.modulate.a = 0.0
+	restart_button.modulate.a = 0.0 #alpha to 0
 	restart_button.show()
 	var tween : Tween = create_tween()
 	tween.tween_interval(13.0)

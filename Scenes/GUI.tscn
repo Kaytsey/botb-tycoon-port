@@ -4,7 +4,7 @@
 [ext_resource type="AudioStream" uid="uid://b2i7d3uyacyj4" path="res://Music/TrueEnd.ogg" id="2_hnmit"]
 [ext_resource type="AudioStream" uid="uid://du3ru1bjmjebh" path="res://Music/End.ogg" id="3_nn5of"]
 
-[node name="Gui" type="Control" unique_id=1459124433 node_paths=PackedStringArray("resources", "flavourtext", "generate_timer", "cutscene_timer", "sacrifice_button", "host_battle_button", "restart_button")]
+[node name="Gui" type="Control" unique_id=1459124433 node_paths=PackedStringArray("resources", "flavourtext", "generate_timer", "cutscene_timer", "sacrifice_button", "host_battle_button", "restart_button", "test_cutscene")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -19,6 +19,7 @@ cutscene_timer = NodePath("Cutscene Timer")
 sacrifice_button = NodePath("Sacrifice n00bs")
 host_battle_button = NodePath("Host Battle")
 restart_button = NodePath("Restart")
+test_cutscene = NodePath("Test Cutscene")
 
 [node name="Flavourtext" type="Label" parent="." unique_id=2135495035]
 layout_mode = 1
@@ -128,9 +129,26 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "Host <Battle>"
 
+[node name="Test Cutscene" type="Button" parent="." unique_id=768359237]
+custom_minimum_size = Vector2(320, 80)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 186.0
+offset_top = -54.0
+offset_right = 506.0
+offset_bottom = 26.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Test Cutscene"
+
 [node name="Generate Timer" type="Timer" parent="." unique_id=891549117]
 
 [node name="Cutscene Timer" type="Timer" parent="." unique_id=1554426040]
+wait_time = 10.0
 
 [node name="TrueEnd" type="AudioStreamPlayer" parent="." unique_id=792819049]
 stream = ExtResource("2_hnmit")
@@ -146,4 +164,6 @@ stream = ExtResource("3_nn5of")
 [connection signal="mouse_entered" from="Sacrifice n00bs" to="." method="_on_sacrifice_n_00_bs_mouse_entered"]
 [connection signal="mouse_exited" from="Sacrifice n00bs" to="." method="_on_sacrifice_n_00_bs_mouse_exited"]
 [connection signal="pressed" from="Host Battle" to="." method="_on_host_battle_pressed"]
+[connection signal="pressed" from="Test Cutscene" to="." method="_on_test_cutscene_pressed"]
 [connection signal="timeout" from="Generate Timer" to="." method="_on_timer_timeout"]
+[connection signal="timeout" from="Cutscene Timer" to="." method="_on_cutscene_timer_timeout"]

@@ -237,6 +237,9 @@ func _on_cutscene_timer_timeout():
 	resluts()
 
 func _on_boongain_timeout():
+	#remove labels
+	for label in get_tree().get_nodes_in_group("results_labels"):
+		label.queue_free()
 	entries = 0
 	tempboons = 0
 	show_all()
@@ -358,13 +361,34 @@ func play_cutscene() -> void:
 		var animation = animations.get_animation_list()
 		animations.play(animation[randi() % animation.size()])
 		animations.set_speed_scale(randf_range(0.5 * tick_speed, 2 * tick_speed))
-		
 
 func resluts() -> void:
+	results_text.text = "+%.2f boons!" %tempboons
 	results_text.show()
-	results_text.text = "+%.2f boons!" %tempboons 
-	pass
-	#show text, make text cool
+	
+	#make text instances in for-loop with various sizes and colors
+	var label_amount : int = 10
+	for i in label_amount:
+		var label = results_text.duplicate()
+		label.z_index = -i
+		label.add_to_group("results_labels")
+		results_text.get_parent().add_child(label)
+		#label.show()
+		label.add_theme_font_size_override("font_size", 28 + i * 8)
+		var middle_y = get_viewport().size.y / 2.0 - label.size.y /2.0 #subtract half of label size to make swaying uniform
+		var tween = label.create_tween().set_loops()
+		tween.tween_method(
+			func(j: float):
+				label.position.y = middle_y + sin(j + i) * 200 #swaying
+				label.add_theme_color_override("font_color", Color.from_hsv(fmod(j / TAU + i * 0.5, 1.0), 0.5, 0.5)), #color shift
+				#end func
+			0.0,
+			TAU,
+			float(i+1)/2
+		)
+	
+	
+	
 	#play cool sound
 
 

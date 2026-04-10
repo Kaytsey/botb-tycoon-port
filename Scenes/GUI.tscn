@@ -106,6 +106,7 @@ offset_bottom = 19.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_type_variation = &"HeaderLarge"
+theme_override_font_sizes/font_size = 40
 text = "Resluts"
 horizontal_alignment = 1
 vertical_alignment = 1

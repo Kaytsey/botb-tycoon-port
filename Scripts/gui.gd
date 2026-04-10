@@ -24,11 +24,11 @@ const slug_scene = preload("res://Scenes/Slugs.tscn")
 
 #resources
 var battle_pressed : bool = false
-var boons : float = 725.00
+var boons : float = 0.00
 const boons_per_tick : int = 9
 var boon_mult : int = 1
 var result_mult : float = 1.1
-var n00bs : int = 10
+var n00bs : int = 0
 var n00b_cost : float = 10.0
 const n00b_cost_base : float = 10.0
 const n00b_cost_mult : float = 1.618
@@ -94,7 +94,7 @@ var speed_mult : float = 1.0
 
 #todo ambience audio
 var playsound : bool = true
-
+var bleep: Array = []
 
 #Function Section
 
@@ -105,6 +105,12 @@ func _ready():
 	particles.get_node("Ascend").hide()
 	particles.get_node("Descend").hide()
 	
+	#setup multiple players to play multiple notes lol
+	for i in range(10):
+		var player = AudioStreamPlayer.new()
+		player.stream = $Ambience.stream
+		add_child(player)
+		bleep.append(player)
 
 #Buttons
 
@@ -207,6 +213,7 @@ func show_ending_text() -> void:
 
 func _on_timer_timeout() -> void:
 	win_game()
+	play_sfx()
 	iterations += 1
 	if battle_pressed: make_boons()
 	generate_boons()
@@ -250,6 +257,7 @@ func _on_boongain_timeout():
 	boonsave_label.hide()
 	entries_text.hide()
 	results_text.hide()
+	playsound = true
 	if last_xhb >= XHB_cost["DD2"]:
 		finishable = true
 
@@ -297,24 +305,69 @@ func calculate_n00b_cost() -> float:
 	else:
 		return n00b_cost * n00b_cost_mult
 
-#TODO
-#i will not write an audio engine for this, sorry
+
+
+#audio
+#D A C# E F# G# A B C#+1 D+2
+#longboi
+#sounds a bit weird somehow, but should be correct, hmm. also obviously too slow.
 func play_sfx() -> void:
 	if playsound == true:
-		if iterations % 10 == 0:
-			$bleep.play()
-			
-			pass
-		
-		
-		pass
+		if !sacrificed:
+			if iterations % 50 == 0:
+				if battle_pressed or n00bs > 4:
+					bleep[0].pitch_scale = semitones_to_pitch(-7) #D
+					bleep[0].play()
+			if iterations % 100 == 0:
+				if n00bs > 0:
+					bleep[1].pitch_scale = semitones_to_pitch(0) #A
+					bleep[1].play()
+			if iterations % 150 == 0:
+				if n00bs > 3:
+					bleep[2].pitch_scale = semitones_to_pitch(4) #C#
+					bleep[2].play()
+			if iterations % 200 == 0:
+				if n00bs > 7:
+					bleep[3].pitch_scale = semitones_to_pitch(7) #E
+					bleep[3].play()
+			if iterations % 250 == 0:
+				if n00bs > 8:
+					bleep[4].pitch_scale = semitones_to_pitch(9) #F#
+					bleep[4].play()
+			if iterations % 65 == 0:
+				if n00bs > 10:
+					bleep[5].pitch_scale = semitones_to_pitch(10) #G#
+					bleep[5].play()
+			if iterations % 75 == 0:
+				if n00bs > 25:
+					bleep[6].pitch_scale = semitones_to_pitch(12) #A+1
+					bleep[6].play()
+			if iterations % 85 == 0:
+				if n00bs > 35:
+					bleep[7].pitch_scale = semitones_to_pitch(14) #B+1
+					bleep[7].play()
+			if iterations % 105 == 0:
+				if n00bs > 200:
+					bleep[8].pitch_scale = semitones_to_pitch(16) #C#+1
+					bleep[8].play()
+			if iterations % 155 == 0:
+				if n00bs > 999:
+					bleep[9].pitch_scale = semitones_to_pitch(17) #D+2
+					bleep[9].play()
+		#if sacrificed
+		else:
+			if iterations % 33 == 0:
+				bleep[0].pitch_scale = semitones_to_pitch(randi_range(-12, 12))
+				bleep[0].play()
+
+func semitones_to_pitch(semitones: float) -> float:
+	#A = 0, A# = 1, B = 2, etc.
+	return pow(2.0, semitones / 12.0)
 
 
 
 
-
-
-#todo
+#todo sfx
 func tally_points() -> void:
 	if last_xhb >= XHB_cost["DD2"]: entries = randi_range (n00bs, n00bs * 3)
 	else: entries = randi_range (1, n00bs)
@@ -376,10 +429,11 @@ func resluts() -> void:
 		#label.show()
 		label.add_theme_font_size_override("font_size", 28 + i * 8)
 		var middle_y = get_viewport().size.y / 2.0 - label.size.y /2.0 #subtract half of label size to make swaying uniform
+		var offset = randi()
 		var tween = label.create_tween().set_loops()
 		tween.tween_method(
 			func(j: float):
-				label.position.y = middle_y + sin(j + i) * 200 #swaying
+				label.position.y = middle_y + sin(j + i + offset) * 200 #swaying
 				label.add_theme_color_override("font_color", Color.from_hsv(fmod(j / TAU + i * 0.5, 1.0), 0.5, 0.5)), #color shift
 				#end func
 			0.0,
@@ -396,10 +450,11 @@ func resluts() -> void:
 
 
 
-#todo
+#todo values
 func host_xhb() -> void:
 	if boons >= XHB_cost["OHB"] and boons < XHB_cost["2HB"]:
 		hide_all()
+		playsound = false
 		#cutscene_timer.wait_time = 5
 		tally_timer.start()
 		boons -= XHB_cost["OHB"]
@@ -408,6 +463,7 @@ func host_xhb() -> void:
 
 	if boons >= XHB_cost["2HB"] and boons < XHB_cost["4HB"]:
 		hide_all()
+		playsound = false
 		#cutscene_timer.wait_time = 10
 		tally_timer.start()
 		boons -= XHB_cost["2HB"]
@@ -416,6 +472,7 @@ func host_xhb() -> void:
 
 	if boons >= XHB_cost["4HB"] and boons < XHB_cost["MAJOR"]:
 		hide_all()
+		playsound = false
 		#cutscene_timer.wait_time = 20
 		tick_speed *= 1.1
 		tally_timer.start()
@@ -426,6 +483,7 @@ func host_xhb() -> void:
 	#MAJOR can have more entries than n00bs
 	if boons >= XHB_cost["MAJOR"] and boons < XHB_cost["DD2"]:
 		hide_all()
+		playsound = false
 		#cutscene_timer.wait_time = 30
 		tick_speed *= 1.1
 		tally_timer.start()
@@ -436,6 +494,7 @@ func host_xhb() -> void:
 	#similar to major
 	if boons >= XHB_cost["DD2"]:
 		hide_all()
+		playsound = false
 		#cutscene_timer.wait_time = 120
 		#cutscene_timer.wait_time = 120
 		#cutscene_timer.wait_time = 120
@@ -448,6 +507,7 @@ func host_xhb() -> void:
 func win_game() -> void:
 	if finishable and !sacrificed:
 		#good end
+		playsound = false
 		hide_all()
 		particles.get_node("Ascend").show()
 		$TrueEnd.play()
@@ -458,6 +518,7 @@ func win_game() -> void:
 		
 	elif finishable and sacrificed:
 		#bad end
+		playsound = false
 		hide_all()
 		particles.get_node("Descend").show()
 		$End.play()
@@ -496,9 +557,9 @@ func restart_game() -> void: #resets all relevant variables
 	entries = 0
 	sacrifice_cost = 2
 	sacrificed = false
-	#progression = 0
 	iterations = 0
 	finishable = false
+	playsound = true
 	tick_speed = 1.0
 	speed_mult = 1.0
 	last_xhb = 0
@@ -508,7 +569,7 @@ func restart_game() -> void: #resets all relevant variables
 	
 	particles.get_node("Descend").hide()
 	particles.get_node("Ascend").hide()
-	
+	update_label_text()
 	show_all()
 	ending_text.hide()
 	boonsave_label.hide()

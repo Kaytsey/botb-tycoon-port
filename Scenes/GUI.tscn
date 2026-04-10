@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://s1rkg4h2te3p" path="res://Scripts/gui.gd" id="1_q7530"]
 [ext_resource type="AudioStream" uid="uid://b2i7d3uyacyj4" path="res://Music/TrueEnd.ogg" id="2_hnmit"]
 [ext_resource type="AudioStream" uid="uid://du3ru1bjmjebh" path="res://Music/End.ogg" id="3_nn5of"]
+[ext_resource type="AudioStream" uid="uid://q5pnststnk8d" path="res://Music/bleep.ogg" id="4_nn5of"]
 
 [node name="Gui" type="Control" unique_id=1459124433 node_paths=PackedStringArray("resources", "flavourtext", "ending_text", "boonsave_label", "entries_text", "results_text", "generate_timer", "tally_timer", "cutscene_timer", "boongain_timer", "sacrifice_button", "host_battle_button", "restart_button", "buy_n00bs")]
 layout_mode = 3
@@ -213,6 +214,7 @@ stream = ExtResource("2_hnmit")
 stream = ExtResource("3_nn5of")
 
 [node name="Ambience" type="AudioStreamPlayer" parent="." unique_id=1721145890]
+stream = ExtResource("4_nn5of")
 
 [connection signal="pressed" from="Restart" to="." method="_on_restart_pressed"]
 [connection signal="button_down" from="Battle" to="." method="_on_battle_button_down"]

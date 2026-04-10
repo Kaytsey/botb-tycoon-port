@@ -5,14 +5,17 @@ extends Control
 @export var resources : Label
 @export var flavourtext : Label
 @export var ending_text : Label
+@export var boonsave_label : Label
+@export var entries_text : Label
+@export var results_text : Label
 @export var generate_timer : Timer
+@export var tally_timer : Timer
 @export var cutscene_timer : Timer
+@export var boongain_timer : Timer
 @export var sacrifice_button : Button
 @export var host_battle_button : Button
 @export var restart_button : Button
 @export var buy_n00bs : Button
-
-@export var test_cutscene : Button
 
 const slug_scene = preload("res://Scenes/Slugs.tscn")
 
@@ -24,31 +27,34 @@ var battle_pressed : bool = false
 var boons : float = 0.00
 const boons_per_tick : int = 9
 var boon_mult : int = 1
+var result_mult : float = 1.1
 var n00bs : int = 7999999999
 var n00b_cost : float = 10.0
 const n00b_cost_base : float = 10.0
 const n00b_cost_mult : float = 1.618
+const n00b_cost_reduction : float = 0.99
 var entries : int = 0
 var total_entries : int = 0
 var sacrifice_cost : int = 2
+var last_xhb : int = 0
+var tempboons : float = 0.0
 
 const cutscene_area_center : Vector3 = Vector3(0, 0, 0)
 
-#maybe use enum instead, maybe it doesn't matter lol
 const XHB_cost = {
 	"OHB": 725,
 	"2HB": 2000,
 	"4HB": 5656,
 	"MAJOR": 56560,
-	"DD2": 5656560, #make number bigger, it's 10 years, man
+	"DD2": 5656560, #might be fine, actually
 }
 
 #progression, ending
 var sacrificed : bool = false #ending related
-var progression : int = 0
+#var progression : int = 0 # ditched
 var finishable : bool = false
 
-#todo maybe add boon breakpoints for later texts - nah
+#maybe add boon breakpoints for later texts - nah
 const flavourtext_text = [
 	"welcome, n00b",
 	"boonless chicken",
@@ -63,12 +69,10 @@ const flavourtext_text = [
 	"Your n00bs love you",
 	"Host a battle!",
 	"!xhb",
-	"we need more",
 	"go on",
 	"keep going",
 	"The slugs love you too!",
 	"yes",
-	"almost",
 	
 	#sacrifice state
 	"Why",
@@ -83,9 +87,13 @@ const flavourtext_text = [
 #timestuff
 var timer_iterations : int
 const ticks : float = 0.01
+var iterations : int = 0
 var tick_speed : float = 1.0
 const flavour_timer : int = 10
 var speed_mult : float = 1.0
+
+#todo ambience audio
+var playsound : bool = true
 
 
 #Function Section
@@ -96,6 +104,7 @@ func _ready():
 	print(particles)
 	particles.get_node("Ascend").hide()
 	particles.get_node("Descend").hide()
+	
 
 #Buttons
 
@@ -139,10 +148,6 @@ func _on_host_battle_pressed():
 func _on_restart_pressed():
 	restart_game()
 
-func _on_test_cutscene_pressed():
-	play_cutscene()
-	cutscene_timer.start()
-
 #Buttons End
 
 #General Text
@@ -175,7 +180,8 @@ func update_flavourtext_text() -> void:
 	if sacrificed:
 		flavourtext.text = flavourtext_text[randi_range(-8, -1)]
 	else:
-		flavourtext.text = flavourtext_text[randi_range(progression, 5 + progression)]
+		#flavourtext.text = flavourtext_text[randi_range(progression, 5 + progression)]
+		flavourtext.text = flavourtext_text[randi_range(0, 16)]
 
 func show_ending_text() -> void:
 	#make text appear gradual
@@ -199,9 +205,9 @@ func show_ending_text() -> void:
 
 #timers
 
-
 func _on_timer_timeout() -> void:
 	win_game()
+	iterations += 1
 	if battle_pressed: make_boons()
 	generate_boons()
 	timer_iterations += 1
@@ -210,19 +216,43 @@ func _on_timer_timeout() -> void:
 		timer_iterations = 0
 	generate_timer.start(ticks)
 
+
+
+
+
+
+
+func _on_tally_timer_timeout():
+	entries_text.show()
+	boonsave_label.show()
+	cutscene_timer.start()
+	play_cutscene()
+
 func _on_cutscene_timer_timeout():
-	if boons >= XHB_cost["DD2"]:
-		finishable = true
-		for slug in get_tree().get_nodes_in_group("slugs"):
-			slug.queue_free()
-		return
-		
-	show_all()
-	restart_button.hide()
-	ending_text.hide()
 	#remove slugs
 	for slug in get_tree().get_nodes_in_group("slugs"):
 		slug.queue_free()
+	
+	boongain_timer.start()
+	resluts()
+
+func _on_boongain_timeout():
+	entries = 0
+	tempboons = 0
+	if boons >= XHB_cost["DD2"]:
+		finishable = true
+	show_all()
+	restart_button.hide()
+	ending_text.hide()
+	sacrifice_button.hide()
+	boonsave_label.hide()
+	results_text.hide()
+
+
+
+
+
+
 
 #resources
 func make_boons() -> void:
@@ -265,14 +295,48 @@ func calculate_n00b_cost() -> float:
 #TODO
 #i will not write an audio engine for this, sorry
 func play_sfx() -> void:
+	if playsound == true:
+		if iterations % 10 == 0:
+			$bleep.play()
+			
+			pass
+		
+		
+		pass
+
+
+
+
+
+
+#todo
+func tally_points() -> void:
+	
+	entries = randi_range (1, n00bs)
+	if last_xhb >= XHB_cost["4HB"]:
+		result_mult *= 1.1
+	tempboons = entries * 10 * result_mult
+
+	if (entries >= 3 and (last_xhb == XHB_cost["OHB"]))\
+	or (entries >= 5 and (last_xhb == XHB_cost["2HB"]))\
+	or (entries >= 7 and (last_xhb == XHB_cost["4HB"]))\
+	or (entries >= 10 and (last_xhb == XHB_cost["MAJOR"])):
+		boonsave_label.show()
+		tempboons += last_xhb
+	
+	#count entries up
+	entries_text.show()
+	entries_text.text = "%s emptries!" %entries
+	
+	boons += tempboons
+	n00b_cost *= pow(n00b_cost_reduction, entries)
+	
 	
 	pass
 
-#todo
 func play_cutscene() -> void:
-	tally_points()
-	#after x seconds go back
-	var slug_amount = randi_range(1, min(n00bs, 560))
+	var slug_amount = min(entries, 560)
+	
 	for i in slug_amount:
 		var slug = slug_scene.instantiate()
 		slug.add_to_group("slugs")
@@ -281,58 +345,70 @@ func play_cutscene() -> void:
 			randf_range(-4.0, 4.0),
 			randf_range(-3.0, 3.0),
 			randf_range(-10.0, 10.0))
-		slug.rotation.y = randf_range(0, 360)
+		slug.rotation.y = randf_range(0, TAU)
 		
 		var animations: AnimationPlayer = slug.get_node("AnimationPlayer")
 		var animation = animations.get_animation_list()
 		animations.play(animation[randi() % animation.size()])
-		#random animation speed TODO add general speedup at breakpoints
 		animations.set_speed_scale(randf_range(0.5 * tick_speed, 2 * tick_speed))
 		
 
-func tally_points() -> void:
-	#
-	
+func resluts() -> void:
 	pass
+	#show text, make text cool
+	#play cool sound
+
+
+
+
 
 
 #todo
 func host_xhb() -> void:
 	if boons >= XHB_cost["OHB"] and boons < XHB_cost["2HB"]:
 		hide_all()
-		cutscene_timer.wait_time = 5
-		cutscene_timer.start()
-		play_cutscene()
+		#cutscene_timer.wait_time = 5
+		tally_timer.start()
+		boons -= XHB_cost["OHB"]
+		last_xhb = XHB_cost["OHB"]
+		tally_points()
 
 	if boons >= XHB_cost["2HB"] and boons < XHB_cost["4HB"]:
 		hide_all()
-		cutscene_timer.wait_time = 10
-		cutscene_timer.start()
-		play_cutscene()
+		#cutscene_timer.wait_time = 10
+		tally_timer.start()
+		boons -= XHB_cost["2HB"]
+		last_xhb = XHB_cost["2HB"]
+		tally_points()
 
 	if boons >= XHB_cost["4HB"] and boons < XHB_cost["MAJOR"]:
 		hide_all()
 		#cutscene_timer.wait_time = 20
-		cutscene_timer.start()
-		play_cutscene()
+		tally_timer.start()
+		boons -= XHB_cost["4HB"]
+		last_xhb = XHB_cost["4HB"]
+		tally_points()
 	
 	#MAJOR can have more entries than n00bs
 	if boons >= XHB_cost["MAJOR"] and boons < XHB_cost["DD2"]:
 		hide_all()
 		#cutscene_timer.wait_time = 30
-		cutscene_timer.start()
-		play_cutscene()
+		tally_timer.start()
+		boons -= XHB_cost["MAJOR"]
+		last_xhb = XHB_cost["MAJOR"]
+		tally_points()
 		tick_speed *= 1.1
 		
 	#similar to major
 	if boons >= XHB_cost["DD2"]:
 		hide_all()
 		#cutscene_timer.wait_time = 120
-		cutscene_timer.start()
-		play_cutscene()
+		tally_timer.start()
+		boons -= XHB_cost["DD2"]
+		last_xhb = XHB_cost["DD2"]
+		tally_points()
 		#win game maybe
 
-#todo
 func win_game() -> void:
 	if finishable and !sacrificed:
 		#good end
@@ -384,10 +460,12 @@ func restart_game() -> void: #resets all relevant variables
 	entries = 0
 	sacrifice_cost = 2
 	sacrificed = false
-	progression = 0
+	#progression = 0
+	iterations = 0
 	finishable = false
 	tick_speed = 1.0
 	speed_mult = 1.0
+	last_xhb = 0
 	
 	$End.stop()
 	$TrueEnd.stop()
@@ -397,4 +475,7 @@ func restart_game() -> void: #resets all relevant variables
 	
 	show_all()
 	ending_text.hide()
+	boonsave_label.hide()
 	restart_button.hide()
+	entries_text.hide()
+	results_text.hide()

@@ -24,15 +24,15 @@ const slug_scene = preload("res://Scenes/Slugs.tscn")
 
 #resources
 var battle_pressed : bool = false
-var boons : float = 0.00
+var boons : float = 725.00
 const boons_per_tick : int = 9
 var boon_mult : int = 1
 var result_mult : float = 1.1
-var n00bs : int = 7999999999
+var n00bs : int = 10
 var n00b_cost : float = 10.0
 const n00b_cost_base : float = 10.0
 const n00b_cost_mult : float = 1.618
-const n00b_cost_reduction : float = 0.99
+const n00b_cost_reduction : float = 0.9
 var entries : int = 0
 var total_entries : int = 0
 var sacrifice_cost : int = 2
@@ -61,7 +61,7 @@ const flavourtext_text = [
 	"batol",
 	"batol is good",
 	"We must gather more boons",
-	"boonsave!",
+	"yea",
 	"number go up",
 	"more boons?",
 	"more boons.",
@@ -72,7 +72,7 @@ const flavourtext_text = [
 	"go on",
 	"keep going",
 	"The slugs love you too!",
-	"yes",
+	"yippee",
 	
 	#sacrifice state
 	"Why",
@@ -172,7 +172,7 @@ func update_label_text() -> void:
 		resources.text = "%.2f boons" %boons
 	if n00bs:
 		resources.text = "%.2f boons & " %boons + "%s n00bs " %n00bs
-	buy_n00bs.text = "buy n00b for %s boons" %n00b_cost
+	buy_n00bs.text = "buy n00b for %.2f boons" %n00b_cost
 	
 
 
@@ -223,8 +223,8 @@ func _on_timer_timeout() -> void:
 
 
 func _on_tally_timer_timeout():
-	entries_text.show()
-	boonsave_label.show()
+	entries_text.hide()
+	boonsave_label.hide()
 	cutscene_timer.start()
 	play_cutscene()
 
@@ -239,14 +239,16 @@ func _on_cutscene_timer_timeout():
 func _on_boongain_timeout():
 	entries = 0
 	tempboons = 0
-	if boons >= XHB_cost["DD2"]:
-		finishable = true
 	show_all()
+	update_label_text()
 	restart_button.hide()
 	ending_text.hide()
 	sacrifice_button.hide()
 	boonsave_label.hide()
+	entries_text.hide()
 	results_text.hide()
+	if last_xhb >= XHB_cost["DD2"]:
+		finishable = true
 
 
 
@@ -290,7 +292,7 @@ func calculate_n00b_cost() -> float:
 	if sacrificed:
 		return n00b_cost_base * (n00b_cost_mult * n00bs)
 	else:
-		return n00b_cost_base * pow(n00b_cost_mult, n00bs)
+		return n00b_cost * n00b_cost_mult
 
 #TODO
 #i will not write an audio engine for this, sorry
@@ -311,8 +313,11 @@ func play_sfx() -> void:
 
 #todo
 func tally_points() -> void:
-	
-	entries = randi_range (1, n00bs)
+	if last_xhb >= XHB_cost["DD2"]: entries = randi_range (n00bs, n00bs * 3)
+	else: entries = randi_range (1, n00bs)
+	if last_xhb >= XHB_cost["MAJOR"]:
+		entries = min(n00bs, n00bs * 5)
+		n00bs *= 2
 	if last_xhb >= XHB_cost["4HB"]:
 		result_mult *= 1.1
 	tempboons = entries * 10 * result_mult
@@ -321,23 +326,25 @@ func tally_points() -> void:
 	or (entries >= 5 and (last_xhb == XHB_cost["2HB"]))\
 	or (entries >= 7 and (last_xhb == XHB_cost["4HB"]))\
 	or (entries >= 10 and (last_xhb == XHB_cost["MAJOR"])):
+		#shows up too early, might not fix
 		boonsave_label.show()
-		tempboons += last_xhb
+		tempboons += last_xhb * result_mult
 	
 	#count entries up
+	var tween : Tween = create_tween()
 	entries_text.show()
-	entries_text.text = "%s emptries!" %entries
+	tween.tween_method(func(i):
+		entries_text.text = "%s emptries!" %i, 0, entries, tally_timer.wait_time)
 	
 	boons += tempboons
 	n00b_cost *= pow(n00b_cost_reduction, entries)
-	
-	
-	pass
+	n00b_cost = ceil(n00b_cost)
 
 func play_cutscene() -> void:
 	var slug_amount = min(entries, 560)
 	
 	for i in slug_amount:
+		randomize()
 		var slug = slug_scene.instantiate()
 		slug.add_to_group("slugs")
 		get_tree().current_scene.add_child(slug)
@@ -354,6 +361,8 @@ func play_cutscene() -> void:
 		
 
 func resluts() -> void:
+	results_text.show()
+	results_text.text = "+%.2f boons!" %tempboons 
 	pass
 	#show text, make text cool
 	#play cool sound
@@ -384,24 +393,27 @@ func host_xhb() -> void:
 	if boons >= XHB_cost["4HB"] and boons < XHB_cost["MAJOR"]:
 		hide_all()
 		#cutscene_timer.wait_time = 20
+		tick_speed *= 1.1
 		tally_timer.start()
 		boons -= XHB_cost["4HB"]
 		last_xhb = XHB_cost["4HB"]
 		tally_points()
-	
+		
 	#MAJOR can have more entries than n00bs
 	if boons >= XHB_cost["MAJOR"] and boons < XHB_cost["DD2"]:
 		hide_all()
 		#cutscene_timer.wait_time = 30
+		tick_speed *= 1.1
 		tally_timer.start()
 		boons -= XHB_cost["MAJOR"]
 		last_xhb = XHB_cost["MAJOR"]
 		tally_points()
-		tick_speed *= 1.1
 		
 	#similar to major
 	if boons >= XHB_cost["DD2"]:
 		hide_all()
+		#cutscene_timer.wait_time = 120
+		#cutscene_timer.wait_time = 120
 		#cutscene_timer.wait_time = 120
 		tally_timer.start()
 		boons -= XHB_cost["DD2"]

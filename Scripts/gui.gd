@@ -81,8 +81,8 @@ const flavourtext_text = [
 	"You will go to Hell, you know?",
 	"Why did you do it?",
 	"Despicable",
-	"You fucked up",
-	"Hell is a real place",]
+	"This is what you wanted",
+	"These numbers don't even make any sense",]
 
 #timestuff
 var timer_iterations : int
@@ -92,7 +92,7 @@ var tick_speed : float = 1.0
 const flavour_timer : int = 10
 var speed_mult : float = 1.0
 
-#todo ambience audio
+#ambience audio
 var playsound : bool = true
 var slug_audio : bool = false
 var slug_audio_iteration : int = 0
@@ -185,7 +185,8 @@ func update_label_text() -> void:
 		resources.text = "%.2f boons" %boons
 	if n00bs:
 		resources.text = "%.2f boons & " %boons + "%s n00bs " %n00bs
-	buy_n00bs.text = "buy n00b for %.2f boons" %n00b_cost
+	if !sacrificed: buy_n00bs.text = "buy n00b for %.2f boons" %n00b_cost
+	if sacrificed: buy_n00bs.text = "buy n00b for %.2f boons" %(n00b_cost * boon_mult)
 	
 
 
@@ -310,7 +311,7 @@ func sacrifice_n00bs() -> void:
 
 func calculate_n00b_cost() -> float:
 	if sacrificed:
-		return n00b_cost_base * (n00b_cost_mult * n00bs)
+		return n00b_cost_base * n00b_cost_mult * n00bs
 	else:
 		return n00b_cost * n00b_cost_mult
 
@@ -323,43 +324,43 @@ func calculate_n00b_cost() -> float:
 func play_sfx() -> void:
 	if playsound == true:
 		if !sacrificed:
-			if iterations % 50 == 0:
+			if iterations % 40 == 0:
 				if battle_pressed or n00bs > 4:
 					bleep[0].pitch_scale = semitones_to_pitch(-7) #D
 					bleep[0].play()
-			if iterations % 100 == 0:
+			if iterations % 80 == 0:
 				if n00bs > 0:
 					bleep[1].pitch_scale = semitones_to_pitch(0) #A
 					bleep[1].play()
-			if iterations % 150 == 0:
+			if iterations % 120 == 0:
 				if n00bs > 3:
 					bleep[2].pitch_scale = semitones_to_pitch(4) #C#
 					bleep[2].play()
-			if iterations % 200 == 0:
+			if iterations % 160 == 0:
 				if n00bs > 7:
 					bleep[3].pitch_scale = semitones_to_pitch(7) #E
 					bleep[3].play()
-			if iterations % 250 == 0:
+			if iterations % 200 == 0:
 				if n00bs > 8:
 					bleep[4].pitch_scale = semitones_to_pitch(9) #F#
 					bleep[4].play()
-			if iterations % 65 == 0:
+			if iterations % 52 == 0:
 				if n00bs > 10:
 					bleep[5].pitch_scale = semitones_to_pitch(10) #G#
 					bleep[5].play()
-			if iterations % 75 == 0:
+			if iterations % 60 == 0:
 				if n00bs > 25:
 					bleep[6].pitch_scale = semitones_to_pitch(12) #A+1
 					bleep[6].play()
-			if iterations % 85 == 0:
+			if iterations % 68 == 0:
 				if n00bs > 35:
 					bleep[7].pitch_scale = semitones_to_pitch(14) #B+1
 					bleep[7].play()
-			if iterations % 105 == 0:
+			if iterations % 84 == 0:
 				if n00bs > 200:
 					bleep[8].pitch_scale = semitones_to_pitch(16) #C#+1
 					bleep[8].play()
-			if iterations % 155 == 0:
+			if iterations % 124 == 0:
 				if n00bs > 999:
 					bleep[9].pitch_scale = semitones_to_pitch(17) #D+2
 					bleep[9].play()
@@ -381,10 +382,8 @@ func play_sfx() -> void:
 			major9_iterator += major9_direction
 			if major9_iterator >= major9.size() - 1 or major9_iterator <= 0:
 				major9_direction *= -1
-			
-			
-		pass
-	
+
+
 func semitones_to_pitch(semitones: float) -> float:
 	#A = 0, A# = 1, B = 2, etc.
 	return pow(2.0, semitones / 12.0)
@@ -422,10 +421,11 @@ func tally_points() -> void:
 	
 	var audio_tween : Tween = create_tween()
 	#just tween everything
+	#this seems to play twice sometimes, idk
 	for i in entries:
 		audio_tween.tween_interval(tally_timer.wait_time/entries)
 		audio_tween.tween_callback(func():
-			$Ambience.pitch_scale = semitones_to_pitch(i)
+			$Ambience.pitch_scale = semitones_to_pitch(min(i, 128))
 			$Ambience.play()
 		)
 		
@@ -433,7 +433,6 @@ func tally_points() -> void:
 	n00b_cost *= pow(n00b_cost_reduction, entries)
 	n00b_cost = ceil(n00b_cost)
 
-#todo sfx
 func play_cutscene() -> void:
 	var slug_amount = min(entries, 560)
 	slug_audio = true
@@ -481,16 +480,12 @@ func resluts() -> void:
 
 
 
-
-
-
-
 #todo values
 func host_xhb() -> void:
 	if boons >= XHB_cost["OHB"] and boons < XHB_cost["2HB"]:
 		hide_all()
 		playsound = false
-		#cutscene_timer.wait_time = 5
+		tally_timer.wait_time = 5/tick_speed
 		tally_timer.start()
 		boons -= XHB_cost["OHB"]
 		last_xhb = XHB_cost["OHB"]
@@ -499,7 +494,7 @@ func host_xhb() -> void:
 	if boons >= XHB_cost["2HB"] and boons < XHB_cost["4HB"]:
 		hide_all()
 		playsound = false
-		#cutscene_timer.wait_time = 10
+		tally_timer.wait_time = 10/tick_speed
 		tally_timer.start()
 		boons -= XHB_cost["2HB"]
 		last_xhb = XHB_cost["2HB"]
@@ -508,8 +503,8 @@ func host_xhb() -> void:
 	if boons >= XHB_cost["4HB"] and boons < XHB_cost["MAJOR"]:
 		hide_all()
 		playsound = false
-		#cutscene_timer.wait_time = 20
 		tick_speed *= 1.1
+		tally_timer.wait_time = 15/tick_speed
 		tally_timer.start()
 		boons -= XHB_cost["4HB"]
 		last_xhb = XHB_cost["4HB"]
@@ -519,8 +514,8 @@ func host_xhb() -> void:
 	if boons >= XHB_cost["MAJOR"] and boons < XHB_cost["DD2"]:
 		hide_all()
 		playsound = false
-		#cutscene_timer.wait_time = 30
 		tick_speed *= 1.1
+		tally_timer.wait_time = 20/tick_speed
 		tally_timer.start()
 		boons -= XHB_cost["MAJOR"]
 		last_xhb = XHB_cost["MAJOR"]
@@ -530,14 +525,13 @@ func host_xhb() -> void:
 	if boons >= XHB_cost["DD2"]:
 		hide_all()
 		playsound = false
-		#cutscene_timer.wait_time = 120
-		#cutscene_timer.wait_time = 120
-		#cutscene_timer.wait_time = 120
+		tally_timer.wait_time = 15
+		cutscene_timer.wait_time = 12
+		boongain_timer.wait_time = 5
 		tally_timer.start()
 		boons -= XHB_cost["DD2"]
 		last_xhb = XHB_cost["DD2"]
 		tally_points()
-		#win game maybe
 
 func win_game() -> void:
 	if finishable and !sacrificed:
@@ -601,7 +595,9 @@ func restart_game() -> void: #resets all relevant variables
 	
 	$End.stop()
 	$TrueEnd.stop()
-	
+	tally_timer.wait_time = 5
+	cutscene_timer.wait_time = 5
+	boongain_timer.wait_time = 2
 	particles.get_node("Descend").hide()
 	particles.get_node("Ascend").hide()
 	update_label_text()

@@ -94,6 +94,13 @@ var speed_mult : float = 1.0
 
 #todo ambience audio
 var playsound : bool = true
+var slug_audio : bool = false
+var slug_audio_iteration : int = 0
+var results_audio : bool = false
+var major9 : Array = [0, 4, 7, 11, 14]
+var major9_iterator : int = 0
+var major9_direction : int = 1
+var results_audio_iteration : int = 0
 var bleep: Array = []
 
 #Function Section
@@ -239,7 +246,8 @@ func _on_cutscene_timer_timeout():
 	#remove slugs
 	for slug in get_tree().get_nodes_in_group("slugs"):
 		slug.queue_free()
-	
+	slug_audio = false
+	slug_audio_iteration = 0
 	boongain_timer.start()
 	resluts()
 
@@ -247,6 +255,7 @@ func _on_boongain_timeout():
 	#remove labels
 	for label in get_tree().get_nodes_in_group("results_labels"):
 		label.queue_free()
+	results_audio = false
 	entries = 0
 	tempboons = 0
 	show_all()
@@ -359,18 +368,33 @@ func play_sfx() -> void:
 			if iterations % 33 == 0:
 				bleep[0].pitch_scale = semitones_to_pitch(randi_range(-12, 12))
 				bleep[0].play()
-
+	if slug_audio == true:
+		if iterations % 4 == 0:
+			bleep[0].pitch_scale = semitones_to_pitch(slug_audio_iteration)
+			bleep[0].play()
+			slug_audio_iteration += 2 #whole tone is nice
+			slug_audio_iteration %= 26
+	if results_audio == true:
+		if iterations % 6 == 0:
+			bleep[0].pitch_scale = semitones_to_pitch(major9[major9_iterator])
+			bleep[0].play()
+			major9_iterator += major9_direction
+			if major9_iterator >= major9.size() - 1 or major9_iterator <= 0:
+				major9_direction *= -1
+			
+			
+		pass
+	
 func semitones_to_pitch(semitones: float) -> float:
 	#A = 0, A# = 1, B = 2, etc.
 	return pow(2.0, semitones / 12.0)
 
 
 
-
-#todo sfx
 func tally_points() -> void:
 	if last_xhb >= XHB_cost["DD2"]: entries = randi_range (n00bs, n00bs * 3)
-	else: entries = randi_range (1, n00bs)
+	else: entries = randi_range (1, n00bs + 1)
+	
 	if last_xhb >= XHB_cost["MAJOR"]:
 		entries = min(n00bs, n00bs * 5)
 		n00bs *= 2
@@ -390,15 +414,29 @@ func tally_points() -> void:
 	var tween : Tween = create_tween()
 	entries_text.show()
 	tween.tween_method(func(i):
-		entries_text.text = "%s emptries!" %i, 0, entries, tally_timer.wait_time)
+		entries_text.text = "%s emptries!" %i,
+		0,
+		entries,
+		tally_timer.wait_time)
 	
+	
+	var audio_tween : Tween = create_tween()
+	#just tween everything
+	for i in entries:
+		audio_tween.tween_interval(tally_timer.wait_time/entries)
+		audio_tween.tween_callback(func():
+			$Ambience.pitch_scale = semitones_to_pitch(i)
+			$Ambience.play()
+		)
+		
 	boons += tempboons
 	n00b_cost *= pow(n00b_cost_reduction, entries)
 	n00b_cost = ceil(n00b_cost)
 
+#todo sfx
 func play_cutscene() -> void:
 	var slug_amount = min(entries, 560)
-	
+	slug_audio = true
 	for i in slug_amount:
 		randomize()
 		var slug = slug_scene.instantiate()
@@ -418,7 +456,7 @@ func play_cutscene() -> void:
 func resluts() -> void:
 	results_text.text = "+%.2f boons!" %tempboons
 	results_text.show()
-	
+	results_audio = true
 	#make text instances in for-loop with various sizes and colors
 	var label_amount : int = 10
 	for i in label_amount:
@@ -440,10 +478,7 @@ func resluts() -> void:
 			TAU,
 			float(i+1)/2
 		)
-	
-	
-	
-	#play cool sound
+
 
 
 

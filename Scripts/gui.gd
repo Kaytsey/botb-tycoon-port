@@ -427,7 +427,7 @@ func tally_points() -> void:
 	counter_audio_j = 0
 	boons += tempboons
 	n00b_cost *= pow(n00b_cost_reduction, entries)
-	n00b_cost = min (1, n00b_cost)
+	n00b_cost = max (1, n00b_cost)
 
 func play_cutscene() -> void:
 	var slug_amount = min(entries, 560)

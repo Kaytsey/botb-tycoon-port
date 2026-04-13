@@ -102,6 +102,7 @@ var major9_iterator : int = 0
 var major9_direction : int = 1
 var results_audio_iteration : int = 0
 var bleep: Array = []
+var counter_audio_j : int = 0
 
 #Function Section
 
@@ -293,7 +294,7 @@ func make_n00bs() -> void:
 		#this method is quite inaccurate, but it works lol
 		n00bs += boon_mult
 		boons -= boon_mult * n00b_cost
-		n00b_cost = ceil(calculate_n00b_cost())
+		n00b_cost = max(1, ceil(calculate_n00b_cost()))
 
 
 func sacrifice_n00bs() -> void:
@@ -411,27 +412,22 @@ func tally_points() -> void:
 	
 	#count entries up
 	var tween : Tween = create_tween()
+	
 	entries_text.show()
 	tween.tween_method(func(i):
-		entries_text.text = "%s emptries!" %i,
+		entries_text.text = "%s emptries!" %i
+		if i > counter_audio_j:
+			counter_audio_j = i
+			$Ambience.pitch_scale = semitones_to_pitch(min(i, 90))
+			$Ambience.play(),
 		0,
 		entries,
 		tally_timer.wait_time)
-	
-	
-	var audio_tween : Tween = create_tween()
-	#just tween everything
-	#this seems to play twice sometimes, idk
-	for i in entries:
-		audio_tween.tween_interval(tally_timer.wait_time/entries)
-		audio_tween.tween_callback(func():
-			$Ambience.pitch_scale = semitones_to_pitch(min(i, 128))
-			$Ambience.play()
-		)
 		
+	counter_audio_j = 0
 	boons += tempboons
 	n00b_cost *= pow(n00b_cost_reduction, entries)
-	n00b_cost = ceil(n00b_cost)
+	n00b_cost = min (1, n00b_cost)
 
 func play_cutscene() -> void:
 	var slug_amount = min(entries, 560)

@@ -416,6 +416,7 @@ func tally_points() -> void:
 	entries_text.show()
 	tween.tween_method(func(i):
 		entries_text.text = "%s emptries!" %i
+<<<<<<< HEAD
 		if i > counter_audio_j:
 			counter_audio_j = i
 			$Ambience.pitch_scale = semitones_to_pitch(min(i, 90))
@@ -425,6 +426,14 @@ func tally_points() -> void:
 		tally_timer.wait_time)
 		
 	counter_audio_j = 0
+=======
+		$Ambience.pitch_scale = semitones_to_pitch(min(i, 64))
+		$Ambience.play(),
+		0,
+		entries,
+		tally_timer.wait_time)
+	
+>>>>>>> a087166caee17cc8ad4d050051f801d7852f6baa
 	boons += tempboons
 	n00b_cost *= pow(n00b_cost_reduction, entries)
 	n00b_cost = min (1, n00b_cost)

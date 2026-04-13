@@ -19,6 +19,11 @@ run/main_scene="uid://cnqjh3fs652dt"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+
 [dotnet]
 
 project/assembly_name="BotB Tycoon"

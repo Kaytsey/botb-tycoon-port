@@ -187,7 +187,7 @@ func update_label_text() -> void:
 	if n00bs:
 		resources.text = "%.2f boons & " %boons + "%s n00bs " %n00bs
 	if !sacrificed: buy_n00bs.text = "buy n00b for %.2f boons" %n00b_cost
-	if sacrificed: buy_n00bs.text = "buy n00b for %.2f boons" %(n00b_cost * boon_mult)
+	if sacrificed: buy_n00bs.text = "buy %s n00bs " %boon_mult + "for %.2f boons" %(n00b_cost * boon_mult)
 	
 
 
@@ -290,7 +290,7 @@ func generate_boons() -> void:
 
 #this fucking destroys my pc at multiple millions - "fixed"
 func make_n00bs() -> void:
-	while boons >= boon_mult * n00b_cost:
+	if boons >= boon_mult * n00b_cost:
 		#this method is quite inaccurate, but it works lol
 		n00bs += boon_mult
 		boons -= boon_mult * n00b_cost
@@ -406,8 +406,6 @@ func tally_points() -> void:
 	or (entries >= 5 and (last_xhb == XHB_cost["2HB"]))\
 	or (entries >= 7 and (last_xhb == XHB_cost["4HB"]))\
 	or (entries >= 10 and (last_xhb == XHB_cost["MAJOR"])):
-		#shows up too early, might not fix
-		boonsave_label.show()
 		tempboons += last_xhb * result_mult
 	
 	#count entries up
@@ -419,11 +417,15 @@ func tally_points() -> void:
 		if i > counter_audio_j:
 			counter_audio_j = i
 			$Ambience.pitch_scale = semitones_to_pitch(min(i, 90))
-			$Ambience.play(),
+			$Ambience.play()
+			if (counter_audio_j >= 3 and (last_xhb == XHB_cost["OHB"]))\
+				or (counter_audio_j >= 5 and (last_xhb == XHB_cost["2HB"]))\
+				or (counter_audio_j >= 7 and (last_xhb == XHB_cost["4HB"]))\
+				or (counter_audio_j >= 10 and (last_xhb == XHB_cost["MAJOR"])):
+					boonsave_label.show(),
 		0,
 		entries,
 		tally_timer.wait_time)
-		
 	counter_audio_j = 0
 	boons += tempboons
 	n00b_cost *= pow(n00b_cost_reduction, entries)
